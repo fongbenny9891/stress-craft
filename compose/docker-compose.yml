@@ -1,0 +1,13 @@
+services:
+  go-detector:
+    build:
+      context: ../docker/go-detector
+    container_name: go-detector
+    ports:
+      - "3001:3000"
+  node-detector:
+    build:
+      context: ../docker/node-detector
+    container_name: node-detector
+    ports:
+      - "3000:3000"

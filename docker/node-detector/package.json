@@ -1,0 +1,17 @@
+{
+  "name": "node-detector",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node-esm index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.9",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "fastify": "^5.4.0"
+  }
+}

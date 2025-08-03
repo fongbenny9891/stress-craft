@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+*.log
+.env
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# OS & misc
+.DS_Store
+Thumbs.db
+*Zone.Identifier
+
+# Docker
+# **/.dockerignore
+compose/*.env
+
+# Compiled outputs
+docker/go-detector/main

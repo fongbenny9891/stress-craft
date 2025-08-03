@@ -1,0 +1,10 @@
+{
+  "name": "stress-craft",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "docker-compose -f compose/docker-compose.yml up --build -d",
+    "stop": "docker-compose -f compose/docker-compose.yml down",
+    "restart": "docker-compose -f compose/docker-compose.yml down && docker-compose -f compose/docker-compose.yml up --build -d"
+  }
+}
