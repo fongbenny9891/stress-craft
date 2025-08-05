@@ -5,6 +5,10 @@
   "scripts": {
     "start": "docker-compose -f compose/docker-compose.yml up --build -d",
     "stop": "docker-compose -f compose/docker-compose.yml down",
-    "restart": "docker-compose -f compose/docker-compose.yml down && docker-compose -f compose/docker-compose.yml up --build -d"
+    "restart": "docker-compose -f compose/docker-compose.yml down && docker-compose -f compose/docker-compose.yml up --build -d",
+    "dev:frontend": "pnpm --filter frontend-ui dev",
+    "dev:node-detector": "pnpm --filter docker/node-detector dev",
+    "dev:go-detector": "pnpm --filter docker/go-detector dev",
+    "restart:all": "pnpm stop && rm -rf frontend/.next/cache && pnpm start && pnpm dev:frontend"
   }
 }
