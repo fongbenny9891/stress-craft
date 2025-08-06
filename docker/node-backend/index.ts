@@ -1,9 +1,9 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
-import { getHostResources } from './lib/hostDetection';
-import fs from 'fs/promises';
-import path from 'path';
-import { formatBytes } from './lib/formatUtils';
+import { getHostResources } from "./lib/hostDetection.js";
+import fs from "fs/promises";
+import path from "path";
+import { formatBytes } from "./lib/formatUtils.js";
 
 const app = Fastify();
 await app.register(cors, { origin: true });
@@ -40,35 +40,45 @@ app.get('/write-test', async (request, reply) => {
 
   // Clear previous log
   await fs.writeFile(logFile, 'Write test started\n');
+  console.log(
+    `[Node Backend] Write test started - ${fileCount} files of ${fileSizeKB}KB each`
+  );
+
   currentTest = {
     startTime: Date.now(),
     fileCount: fileCount,
-    progress: 0
+    progress: 0,
   };
   const startTime = Date.now();
   await fs.mkdir(testDir, { recursive: true });
-  const data = Buffer.alloc(fileSizeKB * 1024, 'a');
+  const data = Buffer.alloc(fileSizeKB * 1024, "a");
 
   for (let i = 0; i < fileCount; i++) {
     const filePath = path.join(testDir, `file_${i}.txt`);
     await fs.writeFile(filePath, data);
     currentTest.progress = i;
-    
+
     if (i % 1000 === 0 || i === fileCount - 1) {
       const elapsedMs = Date.now() - currentTest.startTime;
       const progress = (i / fileCount) * 100;
-      await fs.appendFile(
-        logFile,
-        `Progress: ${i} / ${fileCount} (${progress.toFixed(1)}%) - Elapsed: ${(elapsedMs/1000).toFixed(2)}s\n`
-      );
+      const logMessage = `Progress: ${i} / ${fileCount} (${progress.toFixed(
+        1
+      )}%) - Elapsed: ${(elapsedMs / 1000).toFixed(2)}s`;
+
+      // Log to both file and console
+      await fs.appendFile(logFile, logMessage + "\n");
+      console.log(`[Node Backend] ${logMessage}`);
     }
   }
 
   const durationMs = Date.now() - startTime;
-  await fs.appendFile(
-    logFile, 
-    `Completed: ${fileCount} / ${fileCount} (100.0%) - Total time: ${(durationMs/1000).toFixed(2)}s\n`
-  );
+  const completionMessage = `Completed: ${fileCount} / ${fileCount} (100.0%) - Total time: ${(
+    durationMs / 1000
+  ).toFixed(2)}s`;
+
+  // Log to both file and console
+  await fs.appendFile(logFile, completionMessage + "\n");
+  console.log(`[Node Backend] ${completionMessage}`);
 
   return {
     filesWritten: fileCount,
@@ -96,9 +106,10 @@ app.get('/write-status', async () => {
   }
 });
 
-app.listen({ port: 3000, host: '0.0.0.0' })
-  .then(() => console.log('Node detector listening on port 3000'))
-  .catch(err => {
+app
+  .listen({ port: 3000, host: "0.0.0.0" })
+  .then(() => console.log("Node backend listening on port 3000"))
+  .catch((err) => {
     console.error(err);
     process.exit(1);
   });

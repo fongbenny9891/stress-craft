@@ -16,4 +16,4 @@ export type WriteTestResponse = {
   durationMs: number;
 };
 
-export type DetectorLanguage = 'node' | 'go';
+export type BackendLanguage = "node" | "go" | "rust" | "python" | "csharp";

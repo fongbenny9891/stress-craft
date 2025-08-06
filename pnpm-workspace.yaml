@@ -1,4 +1,3 @@
 packages:
-  - docker/node-detector
-  - docker/go-detector
-  - frontend
+  - "frontend"
+  - "docker/*"

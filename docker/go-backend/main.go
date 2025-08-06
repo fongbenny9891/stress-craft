@@ -105,6 +105,7 @@ func main() {
 		defer logF.Close()
 
 		logF.WriteString("Write test started\n")
+		log.Printf("[Go Backend] Write test started - %d files of %dKB each", fileCount, fileSizeKB)
 
 		for i := 0; i < fileCount; i++ {
 			fpath := filepath.Join(dir, fmt.Sprintf("file_%d.txt", i))
@@ -114,21 +115,29 @@ func main() {
 			if i%1000 == 0 || i == fileCount-1 {
 				elapsed := time.Since(currentTest.StartTime)
 				progress := float64(i) / float64(fileCount) * 100
-				logF.WriteString(fmt.Sprintf(
-					"Progress: %d / %d (%.1f%%) - Elapsed: %.2fs\n",
+				logMessage := fmt.Sprintf(
+					"Progress: %d / %d (%.1f%%) - Elapsed: %.2fs",
 					i, fileCount,
 					progress,
 					elapsed.Seconds(),
-				))
+				)
+				
+				// Log to both file and console
+				logF.WriteString(logMessage + "\n")
+				log.Printf("[Go Backend] %s", logMessage)
 			}
 		}
 
 		duration := time.Since(currentTest.StartTime)
-		logF.WriteString(fmt.Sprintf(
-			"Completed: %d / %d (100.0%%) - Total time: %.2fs\n",
+		completionMessage := fmt.Sprintf(
+			"Completed: %d / %d (100.0%%) - Total time: %.2fs",
 			fileCount, fileCount,
 			duration.Seconds(),
-		))
+		)
+		
+		// Log to both file and console
+		logF.WriteString(completionMessage + "\n")
+		log.Printf("[Go Backend] %s", completionMessage)
 
 		result := map[string]interface{}{
 			"filesWritten": fileCount,
@@ -166,6 +175,6 @@ func main() {
 		w.Write(content)
 	})
 
-	log.Println("Go detector listening on :3000")
+	log.Println("Go backend listening on :3000")
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }

@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { detectorApi } from '../services/detectorApi';
-import type { DetectorLanguage, HostInfoResponse, WriteTestResponse } from '../types/api';
-import { config } from '../config/environment';
+import { backendApi } from '../services/backendApi';
+import type { BackendLanguage, HostInfoResponse, WriteTestResponse } from '../types/api';
 
-export function useDetector(lang: DetectorLanguage) {
+export function useBackend(lang: BackendLanguage) {
   const [hostInfo, setHostInfo] = useState<HostInfoResponse | null>(null);
   const [writeTestResult, setWriteTestResult] = useState<WriteTestResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +12,7 @@ export function useDetector(lang: DetectorLanguage) {
   const fetchHostInfo = async () => {
     try {
       setError(null);
-      const data = await detectorApi.getHostInfo(lang);
+      const data = await backendApi.getHostInfo(lang);
       setHostInfo(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch host info');
@@ -25,7 +24,7 @@ export function useDetector(lang: DetectorLanguage) {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await detectorApi.runWriteTest(lang, { count, size });
+      const data = await backendApi.runWriteTest(lang, { count, size });
       setWriteTestResult(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to run write test');
@@ -37,7 +36,7 @@ export function useDetector(lang: DetectorLanguage) {
 
   const getWriteStatus = async () => {
     try {
-      const text = await detectorApi.getWriteStatus(lang);
+      const text = await backendApi.getWriteStatus(lang);
       setProgress(text);
     } catch (err) {
       setProgress('Error fetching progress log');

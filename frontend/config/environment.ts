@@ -1,19 +1,16 @@
+import {
+  CONFIG,
+  getSupportedLanguages,
+  type BackendLanguage,
+} from "lib/shared-config";
+
 export const config = {
-  detectors: {
-    node: {
-      url: process.env.NODE_DETECTOR_URL || 'http://localhost:3000',
-      defaultCount: 100,
-      defaultSize: 100,
-    },
-    go: {
-      url: process.env.GO_DETECTOR_URL || 'http://localhost:3001',
-      defaultCount: 100,
-      defaultSize: 100,
-    }
-  },
-  routes: {
-    hostInfo: '/host-info',
-    writeTest: '/write-test',
-    writeStatus: '/write-status'
-  }
+  backends: CONFIG.backends,
+  routes: CONFIG.routes,
+  test: CONFIG.test,
+
+  // Helper functions for frontend
+  getSupportedLanguages,
 } as const;
+
+export type { BackendLanguage };

@@ -72,8 +72,8 @@ GET /api/node/write-test?count=1000&size=100
 stress-craft/
 ├── frontend/          # Next.js frontend
 ├── docker/
-│   ├── node-detector/ # Node.js backend
-│   └── go-detector/   # Go backend
+│   ├── node-backend/ # Node.js backend
+│   └── go-backend/   # Go backend
 └── compose/           # Docker compose files
 ```
 

@@ -1,0 +1,19 @@
+{
+  "name": "node-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "fastify": "^4.0.0",
+    "@fastify/cors": "^8.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsx": "^4.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

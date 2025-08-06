@@ -19,4 +19,4 @@ Thumbs.db
 compose/*.env
 
 # Compiled outputs
-docker/go-detector/main
+docker/go-backend/main

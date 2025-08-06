@@ -1,0 +1,8 @@
+{
+  "name": "go-backend",
+  "scripts": {
+    "dev": "air",
+    "build": "go build -o bin/main .",
+    "start": "./bin/main"
+  }
+}

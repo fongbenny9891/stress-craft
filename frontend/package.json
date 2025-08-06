@@ -1,21 +1,24 @@
 {
-  "name": "frontend-ui",
-  "version": "1.0.0",
+  "name": "frontend",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3010",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 3010"
   },
   "dependencies": {
-    "next": "13.4.19",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "dotenv": "^16.0.0",
+    "next": "15.4.5",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0"
+    "@types/dotenv": "^8.2.3",
+    "@types/next": "^9.0.0",
+    "@types/node": "^20.19.9",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "typescript": "^5.9.2"
   }
 }

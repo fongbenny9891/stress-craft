@@ -1,0 +1,27 @@
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+    - gosec
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        disabled: false
+  gosec:
+    excludes:
+      - G404 # Random number generation
