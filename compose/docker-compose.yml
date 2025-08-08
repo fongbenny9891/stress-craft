@@ -1,13 +1,55 @@
 services:
-  go-backend:
-    build:
-      context: ../docker/go-backend
-    container_name: go-backend
-    ports:
-      - "3001:3000"
   node-backend:
-    build:
+    build: 
       context: ../docker/node-backend
-    container_name: node-backend
     ports:
       - "3000:3000"
+    volumes:
+      - stress-data:/tmp/test-write
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  go-backend:
+    build: 
+      context: ../docker/go-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - stress-data:/tmp/test-write
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  python-backend:
+    build:
+      context: ../docker/python-backend
+    ports:
+      - "3003:3003"
+    volumes:
+      - stress-data:/tmp/test-write
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  csharp-backend:
+    build:
+      context: ../docker/csharp-backend
+    ports:
+      - "3004:3004"
+    volumes:
+      - stress-data:/tmp/test-write
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+volumes:
+  stress-data:

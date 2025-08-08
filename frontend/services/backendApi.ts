@@ -8,9 +8,21 @@ export const backendApi = {
   },
 
   async runWriteTest(lang: BackendLanguage, params: { count: number; size: number }) {
-    const res = await fetch(`/api/${lang}/write-test?count=${params.count}&size=${params.size}`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-    return res.json();
+    try {
+      const res = await fetch(
+        `/api/${lang}/write-test?count=${params.count}&size=${params.size}`
+      );
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(
+          `HTTP error! status: ${res.status}, message: ${errorText}`
+        );
+      }
+      return res.json();
+    } catch (error) {
+      console.error(`Write test failed for ${lang} backend:`, error);
+      throw error;
+    }
   },
 
   async getWriteStatus(lang: BackendLanguage) {

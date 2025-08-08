@@ -56,7 +56,7 @@ app.get('/write-test', async (request, reply) => {
   for (let i = 0; i < fileCount; i++) {
     const filePath = path.join(testDir, `file_${i}.txt`);
     await fs.writeFile(filePath, data);
-    currentTest.progress = i;
+    currentTest.progress++; // Update after await
 
     if (i % 1000 === 0 || i === fileCount - 1) {
       const elapsedMs = Date.now() - currentTest.startTime;

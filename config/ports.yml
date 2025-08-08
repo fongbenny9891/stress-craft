@@ -1,0 +1,19 @@
+backends:
+  node:
+    port: 3000
+    name: "Node.js"
+    color: "#68a063"
+  go:
+    port: 3001
+    name: "Go"
+    color: "#00add8"
+  python:
+    port: 3003
+    name: "Python"
+    color: "#3776ab"
+  csharp:
+    port: 3004
+    name: "C#"
+    color: "#512bd4"
+frontend:
+  port: 3010

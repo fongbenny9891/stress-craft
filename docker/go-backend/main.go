@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -29,9 +30,11 @@ type HostResources struct {
 
 // Add global state to track test progress
 type TestState struct {
-	StartTime time.Time
-	FileCount int
-	Progress  int
+	StartTime  time.Time
+	FileCount  int
+	Progress   int
+	IsComplete bool
+	mutex      sync.Mutex
 }
 
 var currentTest = TestState{}
@@ -73,6 +76,15 @@ func getHostResources() HostResources {
 	}
 }
 
+func (t *TestState) UpdateProgress(value int) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+	t.Progress = value
+	if t.Progress >= t.FileCount {
+		t.IsComplete = true
+	}
+}
+
 func main() {
 	http.HandleFunc("/host-info", func(w http.ResponseWriter, r *http.Request) {
 		resources := getHostResources()
@@ -81,6 +93,7 @@ func main() {
 	})
 
 	http.HandleFunc("/write-test", func(w http.ResponseWriter, r *http.Request) {
+		// Input validation
 		query := r.URL.Query()
 		fileCount, _ := strconv.Atoi(query.Get("count"))
 		fileSizeKB, _ := strconv.Atoi(query.Get("size"))
@@ -91,54 +104,73 @@ func main() {
 			fileSizeKB = 100
 		}
 
+		// Create directories
+		dir := "/tmp/test-write"
+		logFile := "/tmp/stress-status-go.log"
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			http.Error(w, "Failed to create directory", http.StatusInternalServerError)
+			return
+		}
+
+		// Initialize log file
+		logF, err := os.Create(logFile)
+		if err != nil {
+			http.Error(w, "Failed to create log file", http.StatusInternalServerError)
+			return
+		}
+		defer logF.Close()
+
+		// Initialize test state
 		currentTest = TestState{
 			StartTime: time.Now(),
 			FileCount: fileCount,
 			Progress:  0,
 		}
 
-		dir := "/tmp/test-write"
-		logFile := "/tmp/stress-status-go.log"
-		os.MkdirAll(dir, os.ModePerm)
+		// Generate test data
 		data := bytes.Repeat([]byte("a"), fileSizeKB*1024)
-		logF, _ := os.Create(logFile)
-		defer logF.Close()
+		
+		// Write start message
+		startMsg := fmt.Sprintf("Write test started - %d files of %dKB each\n", fileCount, fileSizeKB)
+		if _, err := logF.WriteString(startMsg); err != nil {
+			http.Error(w, "Failed to write to log", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("[Go Backend] %s", startMsg)
 
-		logF.WriteString("Write test started\n")
-		log.Printf("[Go Backend] Write test started - %d files of %dKB each", fileCount, fileSizeKB)
-
+		// Write files
 		for i := 0; i < fileCount; i++ {
 			fpath := filepath.Join(dir, fmt.Sprintf("file_%d.txt", i))
-			os.WriteFile(fpath, data, 0644)
-			currentTest.Progress = i
+			if err := os.WriteFile(fpath, data, 0644); err != nil {
+				log.Printf("[Go Backend] Error writing file: %v", err)
+				currentTest = TestState{} // Reset state on error
+				http.Error(w, "Failed to write file", http.StatusInternalServerError)
+				return
+			}
+			
+			currentTest.UpdateProgress(i + 1)
 
-			if i%1000 == 0 || i == fileCount-1 {
+			if (i + 1) % 1000 == 0 || i + 1 == fileCount {
 				elapsed := time.Since(currentTest.StartTime)
-				progress := float64(i) / float64(fileCount) * 100
+				progress := float64(i + 1) / float64(fileCount) * 100
 				logMessage := fmt.Sprintf(
-					"Progress: %d / %d (%.1f%%) - Elapsed: %.2fs",
-					i, fileCount,
+					"Progress: %d / %d (%.1f%%) - Elapsed: %.2fs\n",
+					i + 1, fileCount,
 					progress,
 					elapsed.Seconds(),
 				)
 				
-				// Log to both file and console
-				logF.WriteString(logMessage + "\n")
+				if _, err := logF.WriteString(logMessage); err != nil {
+					http.Error(w, "Failed to write progress", http.StatusInternalServerError)
+					return
+				}
+				logF.Sync()
 				log.Printf("[Go Backend] %s", logMessage)
 			}
 		}
 
+		// Write completion
 		duration := time.Since(currentTest.StartTime)
-		completionMessage := fmt.Sprintf(
-			"Completed: %d / %d (100.0%%) - Total time: %.2fs",
-			fileCount, fileCount,
-			duration.Seconds(),
-		)
-		
-		// Log to both file and console
-		logF.WriteString(completionMessage + "\n")
-		log.Printf("[Go Backend] %s", completionMessage)
-
 		result := map[string]interface{}{
 			"filesWritten": fileCount,
 			"fileSizeKB":   fileSizeKB,
@@ -147,7 +179,10 @@ func main() {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(result)
+		if err := json.NewEncoder(w).Encode(result); err != nil {
+			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+			return
+		}
 	})
 
 	http.HandleFunc("/write-status", func(w http.ResponseWriter, r *http.Request) {
@@ -175,6 +210,6 @@ func main() {
 		w.Write(content)
 	})
 
-	log.Println("Go backend listening on :3000")
-	log.Fatal(http.ListenAndServe(":3000", nil))
+	log.Println("Go backend listening on :3001")
+	log.Fatal(http.ListenAndServe(":3001", nil))
 }

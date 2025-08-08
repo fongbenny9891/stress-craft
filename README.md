@@ -25,7 +25,7 @@ pnpm install
 pnpm start         # Starts Node.js and Go backends in Docker
 pnpm dev:frontend  # Launches the UI
 
-# Open http://localhost:3002 and start testing!
+# Open http://localhost:3010 and start testing!
 ```
 
 ## Core Features
@@ -41,7 +41,6 @@ pnpm dev:frontend  # Launches the UI
 - Write performance metrics
 
 🎮 **Easy Control**
-- Web-based dashboard
 - Customizable test parameters
 - Live results display
 
@@ -70,16 +69,21 @@ GET /api/node/write-test?count=1000&size=100
 
 ```
 stress-craft/
-├── frontend/          # Next.js frontend
+├── config/           # Centralized configuration
+│   └── ports.yml    # Backend port mappings
+├── frontend/        # Next.js frontend
 ├── docker/
-│   ├── node-backend/ # Node.js backend
-│   └── go-backend/   # Go backend
-└── compose/           # Docker compose files
+│   ├── node-backend/  # Node.js backend
+│   ├── go-backend/    # Go backend
+│   ├── python-backend/# Python backend
+│   └── csharp-backend/# C# backend + solution
+└── compose/         # Docker compose files
 ```
 
 ## What's Next?
 
 - [ ] Add Other backend comparison
+- [ ] Importing centralized backend port configs (`config/ports.yml`) into every backend 
 - [ ] Test other I/O actions (Read, Delete, etc), and other possible testing configs
 - [ ] Add more test parameters
 - [ ] Implement better visualization
